@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wady Le3b - Operations Tracker</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: white;
+      color: black;
+      padding: 10px;
+    }
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      width: 100%;
+    }
+    h1 {
+      color: black;
+      margin-bottom: 15px;
+      font-size: 24px;
+      text-align: center;
+    }
+    h2 {
+      color: black;
+      margin: 15px 0 10px 0;
+      font-size: 18px;
+    }
+    h3 {
+      color: black;
+      margin: 10px 0 8px 0;
+      font-size: 16px;
+    }
+    .button {
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      margin: 3px;
+    }
+    .button:hover {
+      background-color: #0052a3;
+    }
+    .delete-btn {
+      background-color: #cc0000;
+      padding: 6px 10px;
+      font-size: 11px;
+    }
+    .tabs {
+      display: flex;
+      gap: 5px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+    .tab-button {
+      background-color: #e6f2ff;
+      color: #0066cc;
+      border: 2px solid #0066cc;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    .tab-button.active {
+      background-color: #0066cc;
+      color: white;
+    }
+    .box {
+      background-color: #e6f2ff;
+      border: 2px solid #0066cc;
+      padding: 8px;
+      margin: 8px 0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .box-white {
+      background-color: white;
+      border: 2px solid #0066cc;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+    @media (max-width: 768px) {
+      .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+      }
+    }
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      margin: 10px 0;
+    }
+    .calendar-day {
+      aspect-ratio: 1;
+      border: 1px solid #0066cc;
+      padding: 2px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 3px;
+      background-color: white;
+      color: black;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      min-height: 40px;
+    }
+    .calendar-day:hover {
+      background-color: #e6f2ff;
+    }
+    .calendar-day.has-data {
+      background-color: #ccffcc;
+      border-color: #00aa00;
+    }
+    .calendar-header {
+      font-weight: bold;
+      text-align: center;
+      padding: 10px;
+      color: black;
+    }
+    .hidden {
+      display: none;
+    }
+    .nav-buttons {
+      text-align: center;
+      margin: 10px 0;
+    }
+    .stat-box {
+      background-color: #e6f2ff;
+      border: 2px solid #0066cc;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+    }
+    .stat-label {
+      color: black;
+      font-size: 10px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .stat-value {
+      color: #0066cc;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .stat-percent {
+      color: #00aa00;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .form-group {
+      margin-bottom: 10px;
+    }
+    .form-group label {
+      display: block;
+      color: black;
+      font-weight: bold;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 8px;
+      border: 2px solid #0066cc;
+      border-radius: 4px;
+      font-size: 12px;
+      color: black;
+      background-color: white;
+    }
+    table {
+      width: 100%;
+      color: black;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    table tr {
+      border-bottom: 1px solid #0066cc;
+    }
+    table td {
+      padding: 6px;
+    }
+    table td.header {
+      font-weight: bold;
+      background-color: #e6f2ff;
+      padding: 6px;
+    }
+    table td.number {
+      text-align: right;
+      color: #0066cc;
+      font-weight: bold;
+      padding: 6px;
+    }
+    .match-item {
+      background-color: white;
+      border: 2px solid #0066cc;
+      padding: 8px;
+      margin: 6px 0;
+      border-radius: 6px;
+      color: black;
+    }
+    .match-item-title {
+      font-weight: bold;
+      color: black;
+      margin-bottom: 3px;
+      font-size: 12px;
+    }
+    .match-item-detail {
+      font-size: 11px;
+      color: #333333;
+      margin-bottom: 4px;
+    }
+    .analytics-section {
+      background-color: white;
+      border: 2px solid #0066cc;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 11px;
+    }
+    .analytics-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px;
+      border-bottom: 1px solid #0066cc;
+      color: black;
+    }
+    .analytics-row.header {
+      font-weight: bold;
+      background-color: #e6f2ff;
+    }
+    .analytics-label {
+      font-weight: bold;
+      flex: 1;
+      font-size: 11px;
+    }
+    .analytics-number {
+      font-weight: bold;
+      color: #0066cc;
+      min-width: 60px;
+      text-align: right;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚽ Wady Le3b Operations Tracker</h1>
+
+    <div class="tabs">
+      <button class="tab-button active" onclick="switchTab('calendar')">📅 Calendar</button>
+      <button class="tab-button" onclick="switchTab('daily')">📝 Daily</button>
+      <button class="tab-button" onclick="switchTab('monthly')">📊 Monthly</button>
+      <button class="tab-button" onclick="switchTab('analytics')">📈 Analytics</button>
+    </div>
+
+    <!-- CALENDAR TAB -->
+    <div id="calendar" class="box">
+      <h2>Calendar - Click a date to view/edit</h2>
+      <div class="nav-buttons">
+        <button class="button" onclick="previousMonth()">← Previous</button>
+        <span id="monthYear" style="margin: 0 10px; font-weight: bold;"></span>
+        <button class="button" onclick="nextMonth()">Next →</button>
+      </div>
+      <div class="calendar" id="calendar-grid"></div>
+    </div>
+
+    <!-- DAILY TAB -->
+    <div id="daily" class="hidden box">
+      <h2>Daily Match Entry</h2>
+      <div class="box-white">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="dateInput">
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <select id="location" onchange="updateFormats()">
+            <option>Tagamoa</option>
+            <option>Madinet Nasr</option>
+            <option>Zayed</option>
+            <option>Shorouk</option>
+            <option>Maadi</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Format</label>
+          <select id="format"></select>
+        </div>
+        <div class="form-group">
+          <label>Match Type</label>
+          <select id="matchType">
+            <option>Regular</option>
+            <option>Recorded</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Number of Matches</label>
+          <input type="number" id="numMatches" value="1" min="1">
+        </div>
+        <div class="form-group">
+          <label>Referee</label>
+          <select id="referee">
+            <option>No Referee</option>
+            <option>Junior Regular</option>
+            <option>Senior Regular</option>
+            <option>Junior Recorded</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Spots Given Away (Free)</label>
+          <input type="number" id="spotsGivenAway" value="0" min="0">
+        </div>
+        <div class="form-group">
+          <label>Started On Time?</label>
+          <select id="onTime">
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+        <button class="button" onclick="saveMatch()" style="width: 100%; margin-top: 10px;">Save Match</button>
+      </div>
+
+      <h2 id="dailyDate" style="margin-top: 20px;">Daily Summary</h2>
+      <div id="dailyMatches"></div>
+      <div id="dailyStats"></div>
+    </div>
+
+    <!-- MONTHLY TAB -->
+    <div id="monthly" class="hidden box">
+      <h2>Monthly Summary</h2>
+      <div style="overflow-x: auto;">
+        <table>
+          <tr>
+            <td class="header">Metric</td>
+            <td class="header">Total</td>
+          </tr>
+          <tr>
+            <td>Total Matches</td>
+            <td class="number"><span id="totalMatches">0</span></td>
+          </tr>
+          <tr>
+            <td>Total Players</td>
+            <td class="number"><span id="totalPlayers">0</span></td>
+          </tr>
+          <tr>
+            <td>Spots Given Away</td>
+            <td class="number"><span id="totalSpotsFree">0</span></td>
+          </tr>
+          <tr>
+            <td>Success Rate (No Free Spots)</td>
+            <td class="number"><span id="successRate">0</span>%</td>
+          </tr>
+        </table>
+      </div>
+
+      <h3 style="margin-top: 20px;">Performance by Location</h3>
+      <div style="overflow-x: auto;">
+        <table id="locationTable"></table>
+      </div>
+
+      <h3 style="margin-top: 20px;">Performance by Format</h3>
+      <div style="overflow-x: auto;">
+        <table id="formatTable"></table>
+      </div>
+    </div>
+
+    <!-- ANALYTICS TAB -->
+    <div id="analytics" class="hidden box">
+      <h2>Operations Analytics & Insights</h2>
+
+      <h3>Key Metrics</h3>
+      <div class="grid-4" id="keyMetrics"></div>
+
+      <h3 style="margin-top: 20px;">Operational Status</h3>
+      <div id="operationalStatus"></div>
+
+      <h3 style="margin-top: 20px;">Recommendations</h3>
+      <div id="recommendations" class="analytics-section"></div>
+    </div>
+  </div>
+
+  <script>
+    const formats = {
+      '5v5': 10,
+      '7v7': 14,
+      '8v8': 16
+    };
+
+    const fieldCosts = {
+      'Tagamoa': {
+        '5v5': { regular: 400, recorded: 400 },
+        '7v7': { regular: 650, recorded: 650 }
+      },
+      'Madinet Nasr': {
+        '5v5': { regular: 400, recorded: 500 },
+        '7v7': { regular: 400, recorded: 500 },
+        '8v8': { regular: 750, recorded: 750 }
+      },
+      'Zayed': {
+        '5v5': { regular: 300, recorded: 300 },
+        '7v7': { regular: 300, recorded: 300 },
+        '8v8': { regular: 300, recorded: 300 }
+      },
+      'Shorouk': {
+        '5v5': { regular: 420, recorded: 420 },
+        '7v7': { regular: 420, recorded: 420 },
+        '8v8': { regular: 420, recorded: 420 }
+      },
+      'Maadi': {
+        '5v5': { regular: 400, recorded: 400 },
+        '7v7': { regular: 400, recorded: 400 },
+        '8v8': { regular: 400, recorded: 400 }
+      }
+    };
+
+    let data = {};
+    let currentMonth = new Date();
+    let selectedDate = new Date();
+
+    function loadData() {
+      const saved = localStorage.getItem('wadyle3bData');
+      data = saved ? JSON.parse(saved) : {};
+    }
+
+    function saveData() {
+      localStorage.setItem('wadyle3bData', JSON.stringify(data));
+    }
+
+    function getDateKey(date) {
+      return date.toISOString().split('T')[0];
+    }
+
+    function updateFormats() {
+      const location = document.getElementById('location').value;
+      const formats_available = Object.keys(fieldCosts[location]);
+      const formatSelect = document.getElementById('format');
+      formatSelect.innerHTML = '';
+      formats_available.forEach(fmt => {
+        const option = document.createElement('option');
+        option.value = fmt;
+        option.text = fmt;
+        formatSelect.appendChild(option);
+      });
+    }
+
+    function getDailyTotal(date) {
+      const key = getDateKey(date);
+      const matches = data[key] || [];
+      let totalMatches = 0;
+      let totalPlayers = 0;
+      let totalSpotsFree = 0;
+
+      matches.forEach(m => {
+        totalMatches += m.numMatches;
+        totalPlayers += m.numMatches * m.spotsPerMatch;
+        totalSpotsFree += m.spotsGivenAway;
+      });
+
+      return {
+        totalMatches,
+        totalPlayers,
+        totalSpotsFree,
+        successRate: totalMatches > 0 ? (totalMatches - (totalSpotsFree > 0 ? 1 : 0)) / totalMatches * 100 : 0
+      };
+    }
+
+    function getMonthlyData() {
+      const year = currentMonth.getFullYear();
+      const month = currentMonth.getMonth();
+      let totalMatches = 0;
+      let totalPlayers = 0;
+      let totalSpotsFree = 0;
+      const locationData = {};
+      const formatData = {};
+
+      for (const key in data) {
+        const date = new Date(key);
+        if (date.getFullYear() === year && date.getMonth() === month) {
+          data[key].forEach(m => {
+            totalMatches += m.numMatches;
+            totalPlayers += m.numMatches * m.spotsPerMatch;
+            totalSpotsFree += m.spotsGivenAway;
+
+            if (!locationData[m.location]) {
+              locationData[m.location] = { matches: 0, players: 0, spotsFree: 0 };
+            }
+            locationData[m.location].matches += m.numMatches;
+            locationData[m.location].players += m.numMatches * m.spotsPerMatch;
+            locationData[m.location].spotsFree += m.spotsGivenAway;
+
+            if (!formatData[m.format]) {
+              formatData[m.format] = { matches: 0, players: 0, spotsFree: 0 };
+            }
+            formatData[m.format].matches += m.numMatches;
+            formatData[m.format].players += m.numMatches * m.spotsPerMatch;
+            formatData[m.format].spotsFree += m.spotsGivenAway;
+          });
+        }
+      }
+
+      return {
+        totalMatches,
+        totalPlayers,
+        totalSpotsFree,
+        locationData,
+        formatData,
+        successRate: totalMatches > 0 ? ((totalMatches - (totalSpotsFree > 0 ? 1 : 0)) / totalMatches * 100).toFixed(1) : 0
+      };
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('[id="calendar"], [id="daily"], [id="monthly"], [id="analytics"]').forEach(el => {
+        el.classList.add('hidden');
+      });
+      document.getElementById(tab).classList.remove('hidden');
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      if (tab === 'monthly') updateMonthlyView();
+      if (tab === 'analytics') updateAnalyticsView();
+      if (tab === 'calendar') renderCalendar();
+    }
+
+    function saveMatch() {
+      const location = document.getElementById('location').value;
+      const format = document.getElementById('format').value;
+      const matchType = document.getElementById('matchType').value;
+      const numMatches = parseInt(document.getElementById('numMatches').value);
+      const referee = document.getElementById('referee').value;
+      const spotsGivenAway = parseInt(document.getElementById('spotsGivenAway').value);
+      const onTime = document.getElementById('onTime').value === 'Yes';
+
+      const players = formats[format];
+
+      const match = {
+        location,
+        matchType,
+        format,
+        numMatches,
+        spotsPerMatch: players,
+        referee,
+        onTime,
+        spotsGivenAway
+      };
+
+      const key = getDateKey(selectedDate);
+      if (!data[key]) data[key] = [];
+      data[key].push(match);
+      saveData();
+
+      document.getElementById('numMatches').value = '1';
+      document.getElementById('spotsGivenAway').value = '0';
+      updateDailyView();
+    }
+
+    function deleteMatch(index) {
+      const key = getDateKey(selectedDate);
+      if (confirm('Delete this match?')) {
+        data[key].splice(index, 1);
+        if (data[key].length === 0) delete data[key];
+        saveData();
+        updateDailyView();
+        renderCalendar();
+      }
+    }
+
+    function updateDailyView() {
+      const key = getDateKey(selectedDate);
+      const matches = data[key] || [];
+      const daily = getDailyTotal(selectedDate);
+
+      document.getElementById('dailyDate').textContent = `Daily Summary - ${selectedDate.toDateString()}`;
+
+      let html = '';
+      matches.forEach((m, i) => {
+        html += `
+          <div class="match-item">
+            <div class="match-item-title">${m.location} • ${m.format} • ${m.matchType}</div>
+            <div class="match-item-detail">Matches: ${m.numMatches} | Players: ${m.numMatches * m.spotsPerMatch}</div>
+            <div class="match-item-detail">Free Spots: ${m.spotsGivenAway} | Referee: ${m.referee} | On Time: ${m.onTime ? 'Yes' : 'No'}</div>
+            <button class="button delete-btn" onclick="deleteMatch(${i})">Delete</button>
+          </div>
+        `;
+      });
+      document.getElementById('dailyMatches').innerHTML = html;
+
+      html = `
+        <div class="grid-2">
+          <div class="stat-box">
+            <div class="stat-label">Total Matches</div>
+            <div class="stat-value">${daily.totalMatches}</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Total Players</div>
+            <div class="stat-value">${daily.totalPlayers}</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Free Spots</div>
+            <div class="stat-value">${daily.totalSpotsFree}</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Success Rate</div>
+            <div class="stat-percent">${daily.successRate.toFixed(1)}%</div>
+          </div>
+        </div>
+      `;
+      document.getElementById('dailyStats').innerHTML = html;
+    }
+
+    function updateMonthlyView() {
+      const monthly = getMonthlyData();
+
+      document.getElementById('totalMatches').textContent = monthly.totalMatches;
+      document.getElementById('totalPlayers').textContent = monthly.totalPlayers;
+      document.getElementById('totalSpotsFree').textContent = monthly.totalSpotsFree;
+      document.getElementById('successRate').textContent = monthly.successRate;
+
+      // Location table
+      let html = '<tr><td class="header">Location</td><td class="header">Matches</td><td class="header">Players</td><td class="header">Free Spots</td><td class="header">Free %</td></tr>';
+      for (const loc in monthly.locationData) {
+        const d = monthly.locationData[loc];
+        const freePercent = d.players > 0 ? ((d.spotsFree / d.players) * 100).toFixed(1) : 0;
+        const freeColor = freePercent > 20 ? 'color: #cc0000;' : '';
+        html += `<tr><td>${loc}</td><td class="number">${d.matches}</td><td class="number">${d.players}</td><td class="number">${d.spotsFree}</td><td class="number" style="${freeColor}">${freePercent}%</td></tr>`;
+      }
+      document.getElementById('locationTable').innerHTML = html;
+
+      // Format table
+      html = '<tr><td class="header">Format</td><td class="header">Matches</td><td class="header">Players</td><td class="header">Free Spots</td><td class="header">Free %</td></tr>';
+      for (const fmt in monthly.formatData) {
+        const d = monthly.formatData[fmt];
+        const freePercent = d.players > 0 ? ((d.spotsFree / d.players) * 100).toFixed(1) : 0;
+        const freeColor = freePercent > 20 ? 'color: #cc0000;' : '';
+        html += `<tr><td>${fmt}</td><td class="number">${d.matches}</td><td class="number">${d.players}</td><td class="number">${d.spotsFree}</td><td class="number" style="${freeColor}">${freePercent}%</td></tr>`;
+      }
+      document.getElementById('formatTable').innerHTML = html;
+    }
+
+    function updateAnalyticsView() {
+      const monthly = getMonthlyData();
+
+      // Key metrics
+      let html = `
+        <div class="stat-box">
+          <div class="stat-label">Total Matches</div>
+          <div class="stat-value">${monthly.totalMatches}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Total Players</div>
+          <div class="stat-value">${monthly.totalPlayers}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Free Spots</div>
+          <div class="stat-value">${monthly.totalSpotsFree}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Success Rate</div>
+          <div class="stat-percent">${monthly.successRate}%</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Avg Players/Match</div>
+          <div class="stat-value">${monthly.totalMatches > 0 ? (monthly.totalPlayers / monthly.totalMatches).toFixed(1) : 0}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Free Spots/Match</div>
+          <div class="stat-value">${monthly.totalMatches > 0 ? (monthly.totalSpotsFree / monthly.totalMatches).toFixed(2) : 0}</div>
+        </div>
+      `;
+      document.getElementById('keyMetrics').innerHTML = html;
+
+      // Recommendations
+      let recommendations = [];
+      if (monthly.totalMatches === 0) {
+        recommendations.push('No matches logged this month.');
+      } else {
+        const freeSpotRate = (monthly.totalSpotsFree / monthly.totalPlayers) * 100;
+        if (freeSpotRate > 10) {
+          recommendations.push(`⚠️ High free spot rate: ${freeSpotRate.toFixed(1)}%. Consider increasing player engagement.`);
+        }
+        let worstLocation = '';
+        let worstRate = 0;
+        for (const loc in monthly.locationData) {
+          const rate = (monthly.locationData[loc].spotsFree / monthly.locationData[loc].players) * 100;
+          if (rate > worstRate) {
+            worstRate = rate;
+            worstLocation = loc;
+          }
+        }
+        if (worstLocation) {
+          recommendations.push(`📍 ${worstLocation} has highest free spot rate: ${worstRate.toFixed(1)}%.`);
+        }
+        const bestLocation = Object.keys(monthly.locationData).reduce((a, b) => 
+          monthly.locationData[a].matches > monthly.locationData[b].matches ? a : b
+        );
+        recommendations.push(`✅ ${bestLocation} is your busiest location with ${monthly.locationData[bestLocation].matches} matches.`);
+      }
+
+      html = recommendations.map(r => `<div class="analytics-row"><div class="analytics-label">${r}</div></div>`).join('');
+      document.getElementById('recommendations').innerHTML = html;
+
+      // Operational status
+      html = `
+        <div class="analytics-section">
+          <div class="analytics-row header">
+            <div class="analytics-label">Metric</div>
+            <div class="analytics-number">Value</div>
+          </div>
+          <div class="analytics-row">
+            <div class="analytics-label">Matches This Month</div>
+            <div class="analytics-number">${monthly.totalMatches}</div>
+          </div>
+          <div class="analytics-row">
+            <div class="analytics-label">Total Players</div>
+            <div class="analytics-number">${monthly.totalPlayers}</div>
+          </div>
+          <div class="analytics-row">
+            <div class="analytics-label">Free Spots Given</div>
+            <div class="analytics-number">${monthly.totalSpotsFree}</div>
+          </div>
+          <div class="analytics-row">
+            <div class="analytics-label">Paid Spots</div>
+            <div class="analytics-number">${monthly.totalPlayers - monthly.totalSpotsFree}</div>
+          </div>
+        </div>
+      `;
+      document.getElementById('operationalStatus').innerHTML = html;
+    }
+
+    function renderCalendar() {
+      const year = currentMonth.getFullYear();
+      const month = currentMonth.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      document.getElementById('monthYear').textContent = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      let html = '';
+      days.forEach(d => {
+        html += `<div class="calendar-header">${d}</div>`;
+      });
+
+      for (let i = 0; i < firstDay; i++) {
+        html += '<div></div>';
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const key = getDateKey(date);
+        const hasData = data[key] && data[key].length > 0;
+        html += `
+          <div class="calendar-day ${hasData ? 'has-data' : ''}" onclick="selectDate(${day})">
+            ${day}
+          </div>
+        `;
+      }
+
+      document.getElementById('calendar-grid').innerHTML = html;
+    }
+
+    function selectDate(day) {
+      selectedDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+      document.getElementById('dateInput').value = getDateKey(selectedDate);
+      switchTab('daily');
+      updateDailyView();
+    }
+
+    function previousMonth() {
+      currentMonth.setMonth(currentMonth.getMonth() - 1);
+      renderCalendar();
+    }
+
+    function nextMonth() {
+      currentMonth.setMonth(currentMonth.getMonth() + 1);
+      renderCalendar();
+    }
+
+    // Initialize
+    loadData();
+    document.getElementById('dateInput').valueAsDate = new Date();
+    selectedDate = new Date();
+    updateFormats();
+    renderCalendar();
+  </script>
+</body>
+</html>
